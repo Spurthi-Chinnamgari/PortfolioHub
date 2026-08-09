@@ -1,0 +1,18 @@
+services:
+  postgres:
+    image: postgres:17
+    container_name: portfoliohub-postgres
+
+    environment:
+      POSTGRES_DB: portfoliohub
+      POSTGRES_USER: portfoliohub
+      POSTGRES_PASSWORD: portfoliohub_dev_password
+
+    ports:
+      - "5432:5432"
+
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+volumes:
+  postgres_data:
