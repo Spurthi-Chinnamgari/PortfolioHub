@@ -11,6 +11,20 @@ CREATE TABLE users (
     updated_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 
+CREATE TABLE portfolio (
+    id UUID PRIMARY KEY,
+    user_id UUID NOT NULL UNIQUE,
+    title VARCHAR(255) NOT NULL,
+    bio TEXT NOT NULL,
+    skills TEXT NOT NULL,
+    created_at TIMESTAMPTZ NOT NULL,
+    updated_at TIMESTAMPTZ NOT NULL,
+
+    CONSTRAINT fk_portfolio_current_user
+        FOREIGN KEY (user_id)
+        REFERENCES users(id)
+);
+
 CREATE TABLE portfolios (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
 
