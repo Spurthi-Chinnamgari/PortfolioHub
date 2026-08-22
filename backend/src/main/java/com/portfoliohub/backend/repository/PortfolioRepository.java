@@ -10,4 +10,8 @@ import com.portfoliohub.backend.entity.Portfolio;
 public interface PortfolioRepository extends JpaRepository<Portfolio, UUID> {
 
     Optional<Portfolio> findByUserId(UUID userId);
+
+    Optional<Portfolio> findBySlug(String slug);
+
+    boolean existsBySlug(String slug);
 }

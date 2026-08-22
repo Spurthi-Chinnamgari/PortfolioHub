@@ -8,8 +8,9 @@ public class PortfolioResponse {
     private UUID id;
     private UUID userId;
     private String title;
-    private String bio;
-    private String skills;
+    private String slug;
+    private String theme;
+    private String visibility;
     private Instant createdAt;
     private Instant updatedAt;
 
@@ -40,20 +41,28 @@ public class PortfolioResponse {
         this.title = title;
     }
 
-    public String getBio() {
-        return bio;
+    public String getSlug() {
+        return slug;
     }
 
-    public void setBio(String bio) {
-        this.bio = bio;
+    public void setSlug(String slug) {
+        this.slug = slug;
     }
 
-    public String getSkills() {
-        return skills;
+    public String getTheme() {
+        return theme;
     }
 
-    public void setSkills(String skills) {
-        this.skills = skills;
+    public void setTheme(String theme) {
+        this.theme = theme;
+    }
+
+    public String getVisibility() {
+        return visibility;
+    }
+
+    public void setVisibility(String visibility) {
+        this.visibility = visibility;
     }
 
     public Instant getCreatedAt() {

@@ -9,46 +9,48 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 
 @Entity
-@Table(name = "portfolio")
+@Table(name = "portfolios")
 public class Portfolio {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
-    @ManyToOne
-    @JoinColumn(name = "user_id", nullable = false)
+    @OneToOne
+    @JoinColumn(name = "user_id", nullable = false, unique = true)
     private User user;
 
-    @Column(name = "title")
+    @Column(name = "title", nullable = false)
     private String title;
 
-    @Column(name = "bio")
-    private String bio;
+    @Column(name = "slug", nullable = false, unique = true)
+    private String slug;
 
-    @Column(name = "skills")
-    private String skills;
+    @Column(name = "theme", nullable = false)
+    private String theme;
 
-    @Column(name = "created_at")
+    @Column(name = "visibility", nullable = false)
+    private String visibility;
+
+    @Column(name = "created_at", nullable = false)
     private Instant createdAt;
 
-    @Column(name = "updated_at")
+    @Column(name = "updated_at", nullable = false)
     private Instant updatedAt;
 
     protected Portfolio() {
     }
 
-    public Portfolio(User user, String title, String bio, String skills) {
+    public Portfolio(User user, String title, String slug, String theme, String visibility) {
         this.user = user;
         this.title = title;
-        this.bio = bio;
-        this.skills = skills;
-        this.createdAt = Instant.now();
-        this.updatedAt = Instant.now();
+        this.slug = slug;
+        this.theme = theme;
+        this.visibility = visibility;
     }
 
     public UUID getId() {
@@ -75,20 +77,28 @@ public class Portfolio {
         this.title = title;
     }
 
-    public String getBio() {
-        return bio;
+    public String getSlug() {
+        return slug;
     }
 
-    public void setBio(String bio) {
-        this.bio = bio;
+    public void setSlug(String slug) {
+        this.slug = slug;
     }
 
-    public String getSkills() {
-        return skills;
+    public String getTheme() {
+        return theme;
     }
 
-    public void setSkills(String skills) {
-        this.skills = skills;
+    public void setTheme(String theme) {
+        this.theme = theme;
+    }
+
+    public String getVisibility() {
+        return visibility;
+    }
+
+    public void setVisibility(String visibility) {
+        this.visibility = visibility;
     }
 
     public Instant getCreatedAt() {

@@ -28,10 +28,19 @@ public class PortfolioService {
             throw new IllegalArgumentException("Portfolio already exists");
         }
 
+        if (portfolioRepository.existsBySlug(request.getSlug())) {
+            throw new IllegalArgumentException("Slug already exists");
+        }
+
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("User not found"));
 
-        Portfolio portfolio = new Portfolio(user, request.getTitle(), request.getBio(), request.getSkills());
+        Portfolio portfolio = new Portfolio(
+                user,
+                request.getTitle(),
+                request.getSlug(),
+                request.getTheme(),
+                request.getVisibility());
         portfolio.setCreatedAt(Instant.now());
         portfolio.setUpdatedAt(Instant.now());
 
@@ -49,9 +58,14 @@ public class PortfolioService {
         Portfolio portfolio = portfolioRepository.findByUserId(userId)
                 .orElseThrow(() -> new IllegalArgumentException("Portfolio not found"));
 
+        if (!portfolio.getSlug().equals(request.getSlug()) && portfolioRepository.existsBySlug(request.getSlug())) {
+            throw new IllegalArgumentException("Slug already exists");
+        }
+
         portfolio.setTitle(request.getTitle());
-        portfolio.setBio(request.getBio());
-        portfolio.setSkills(request.getSkills());
+        portfolio.setSlug(request.getSlug());
+        portfolio.setTheme(request.getTheme());
+        portfolio.setVisibility(request.getVisibility());
         portfolio.setUpdatedAt(Instant.now());
 
         return toResponse(portfolioRepository.save(portfolio));
@@ -69,8 +83,9 @@ public class PortfolioService {
         response.setId(portfolio.getId());
         response.setUserId(portfolio.getUser().getId());
         response.setTitle(portfolio.getTitle());
-        response.setBio(portfolio.getBio());
-        response.setSkills(portfolio.getSkills());
+        response.setSlug(portfolio.getSlug());
+        response.setTheme(portfolio.getTheme());
+        response.setVisibility(portfolio.getVisibility());
         response.setCreatedAt(portfolio.getCreatedAt());
         response.setUpdatedAt(portfolio.getUpdatedAt());
         return response;

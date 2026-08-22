@@ -7,11 +7,14 @@ public class PortfolioRequest {
     @NotBlank(message = "Title is required")
     private String title;
 
-    @NotBlank(message = "Bio is required")
-    private String bio;
+    @NotBlank(message = "Slug is required")
+    private String slug;
 
-    @NotBlank(message = "Skills are required")
-    private String skills;
+    @NotBlank(message = "Theme is required")
+    private String theme;
+
+    @NotBlank(message = "Visibility is required")
+    private String visibility;
 
     public PortfolioRequest() {
     }
@@ -24,19 +27,27 @@ public class PortfolioRequest {
         this.title = title;
     }
 
-    public String getBio() {
-        return bio;
+    public String getSlug() {
+        return slug;
     }
 
-    public void setBio(String bio) {
-        this.bio = bio;
+    public void setSlug(String slug) {
+        this.slug = slug;
     }
 
-    public String getSkills() {
-        return skills;
+    public String getTheme() {
+        return theme;
     }
 
-    public void setSkills(String skills) {
-        this.skills = skills;
+    public void setTheme(String theme) {
+        this.theme = theme;
+    }
+
+    public String getVisibility() {
+        return visibility;
+    }
+
+    public void setVisibility(String visibility) {
+        this.visibility = visibility;
     }
 }
