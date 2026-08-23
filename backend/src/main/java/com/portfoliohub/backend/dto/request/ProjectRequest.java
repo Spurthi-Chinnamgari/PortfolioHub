@@ -1,5 +1,6 @@
 package com.portfoliohub.backend.dto.request;
 
+import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 
 public class ProjectRequest {
@@ -17,6 +18,8 @@ public class ProjectRequest {
     private String liveDemoUrl;
     private Boolean featured;
     private Boolean published;
+
+    @Min(value = 0, message = "Display order cannot be negative")
     private Integer displayOrder;
 
     public ProjectRequest() {
