@@ -9,10 +9,12 @@ import {
     deleteProject,
     deleteSkill,
     deleteCertificate,
+    deleteContactMessage,
     getMyPortfolio,
     getProjects,
     getSkills,
     getCertificates,
+    getContactMessages,
     updatePortfolio,
     updateProject,
     updateSkill,
@@ -97,6 +99,7 @@ function Dashboard() {
     const [skills, setSkills] = useState([]);
     const [skillForm, setSkillForm] = useState(emptySkillForm);
     const [certificates, setCertificates] = useState([]);
+    const [contactMessages, setContactMessages] = useState([]);
     const [certificateForm, setCertificateForm] = useState(emptyCertificateForm);
     const [loading, setLoading] = useState(true);
     const [saving, setSaving] = useState(false);
@@ -120,20 +123,23 @@ function Dashboard() {
                     theme: portfolioData.theme,
                     visibility: portfolioData.visibility,
                 });
-                const [projectData, skillData, certificateData] = await Promise.all([
+                const [projectData, skillData, certificateData, messageData] = await Promise.all([
                     getProjects(),
                     getSkills(),
                     getCertificates(),
+                    getContactMessages(),
                 ]);
                 setProjects(projectData);
                 setSkills(skillData);
                 setCertificates(certificateData);
+                setContactMessages(messageData);
             } catch (loadError) {
                 if (loadError.message === "Portfolio not found") {
                     setPortfolio(null);
                     setProjects([]);
                     setSkills([]);
                     setCertificates([]);
+                    setContactMessages([]);
                 } else {
                     setError(loadError.message);
                 }
@@ -188,14 +194,16 @@ function Dashboard() {
             });
             setEditingPortfolio(false);
             if (!portfolio) {
-                const [projectData, skillData, certificateData] = await Promise.all([
+                const [projectData, skillData, certificateData, messageData] = await Promise.all([
                     getProjects(),
                     getSkills(),
                     getCertificates(),
+                    getContactMessages(),
                 ]);
                 setProjects(projectData);
                 setSkills(skillData);
                 setCertificates(certificateData);
+                setContactMessages(messageData);
             }
         } catch (saveError) {
             setError(saveError.message);
@@ -323,6 +331,20 @@ function Dashboard() {
         }
     };
 
+    const handleDeleteContactMessage = async (contactMessage) => {
+        if (!window.confirm("Delete this contact message? This cannot be undone.")) return;
+        setError("");
+        setSaving(true);
+        try {
+            await deleteContactMessage(contactMessage.id);
+            setContactMessages((currentMessages) => currentMessages.filter(({ id }) => id !== contactMessage.id));
+        } catch (deleteError) {
+            setError(deleteError.message);
+        } finally {
+            setSaving(false);
+        }
+    };
+
     const handleDeleteProject = async (project) => {
         if (!window.confirm(`Delete project "${project.title}"? This cannot be undone.`)) return;
         setError("");
@@ -347,6 +369,7 @@ function Dashboard() {
             setProjects([]);
             setSkills([]);
             setCertificates([]);
+            setContactMessages([]);
             setPortfolioForm(emptyPortfolioForm);
             setEditingPortfolio(false);
         } catch (deleteError) {
@@ -569,6 +592,33 @@ function Dashboard() {
                                         setShowSkillForm(true);
                                     }}>Edit</button>
                                     <button type="button" onClick={() => handleDeleteSkill(skill)} disabled={saving}>Delete</button>
+                                </article>
+                            ))}
+                        </div>
+                    )}
+                </section>
+            )}
+
+            {portfolio && (
+                <section>
+                    <h2>Contact Messages</h2>
+                    {contactMessages.length === 0 ? <p>No messages yet</p> : (
+                        <div>
+                            {contactMessages.map((contactMessage) => (
+                                <article key={contactMessage.id}>
+                                    <h3>{contactMessage.subject || "No subject"}</h3>
+                                    <p>From: {contactMessage.name}</p>
+                                    <p>Email: {contactMessage.email}</p>
+                                    <p>Message: {contactMessage.message}</p>
+                                    <p>Status: {contactMessage.status}</p>
+                                    <p>Received: {contactMessage.createdAt}</p>
+                                    <button
+                                        type="button"
+                                        onClick={() => handleDeleteContactMessage(contactMessage)}
+                                        disabled={saving}
+                                    >
+                                        Delete
+                                    </button>
                                 </article>
                             ))}
                         </div>

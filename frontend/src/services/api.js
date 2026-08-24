@@ -154,3 +154,20 @@ export async function deleteCertificate(id) {
         method: "DELETE",
     });
 }
+
+export async function sendContactMessage(portfolioSlug, message) {
+    return apiRequest(`/api/contact/${encodeURIComponent(portfolioSlug)}`, {
+        method: "POST",
+        body: JSON.stringify(message),
+    });
+}
+
+export async function getContactMessages() {
+    return apiRequest("/api/contact/messages");
+}
+
+export async function deleteContactMessage(id) {
+    return apiRequest(`/api/contact/messages/${id}`, {
+        method: "DELETE",
+    });
+}
