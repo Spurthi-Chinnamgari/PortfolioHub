@@ -10,6 +10,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -44,6 +45,11 @@ public class ContactMessageController {
     @GetMapping("/messages")
     public List<ContactMessageResponse> getMessages() {
         return contactMessageService.getForOwner(getCurrentUserId());
+    }
+
+    @PatchMapping("/messages/{id}/read")
+    public ContactMessageResponse markMessageAsRead(@PathVariable UUID id) {
+        return contactMessageService.markAsReadForOwner(getCurrentUserId(), id);
     }
 
     @DeleteMapping("/messages/{id}")

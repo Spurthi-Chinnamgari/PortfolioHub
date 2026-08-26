@@ -1,6 +1,7 @@
 package com.portfoliohub.backend.service;
 
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
 import org.springframework.stereotype.Service;
@@ -15,6 +16,13 @@ import com.portfoliohub.backend.repository.SkillRepository;
 
 @Service
 public class SkillService {
+
+    private static final Set<String> ALLOWED_PROFICIENCIES = Set.of(
+            "Beginner",
+            "Intermediate",
+            "Advanced",
+            "Expert"
+    );
 
     private final SkillRepository skillRepository;
     private final SkillCategoryRepository skillCategoryRepository;
@@ -40,13 +48,16 @@ public class SkillService {
         ProjectPortfolio portfolio = getPortfolioForUser(userId);
         validateCategory(request.getCategoryId(), portfolio.getId());
         validateUniqueName(request.getName(), portfolio.getId(), null);
+        validateProficiency(request.getProficiency());
+        int displayOrder = request.getDisplayOrder() == null ? 0 : request.getDisplayOrder();
+        validateUniqueDisplayOrder(portfolio.getId(), displayOrder, null);
 
         Skill skill = new Skill(
                 portfolio,
                 request.getCategoryId(),
                 request.getName(),
                 request.getProficiency(),
-                request.getDisplayOrder()
+                displayOrder
         );
         return toResponse(skillRepository.save(skill));
     }
@@ -56,11 +67,14 @@ public class SkillService {
         Skill skill = findSkillForPortfolio(skillId, portfolio.getId());
         validateCategory(request.getCategoryId(), portfolio.getId());
         validateUniqueName(request.getName(), portfolio.getId(), skill.getId());
+        validateProficiency(request.getProficiency());
+        int displayOrder = request.getDisplayOrder() == null ? 0 : request.getDisplayOrder();
+        validateUniqueDisplayOrder(portfolio.getId(), displayOrder, skill.getId());
 
         skill.setCategoryId(request.getCategoryId());
         skill.setName(request.getName());
         skill.setProficiency(request.getProficiency());
-        skill.setDisplayOrder(request.getDisplayOrder() == null ? 0 : request.getDisplayOrder());
+        skill.setDisplayOrder(displayOrder);
         return toResponse(skillRepository.save(skill));
     }
 
@@ -85,11 +99,36 @@ public class SkillService {
         }
     }
 
+    private void validateProficiency(String proficiency) {
+        if (proficiency == null || proficiency.isBlank()) {
+            return;
+        }
+
+        String normalized = proficiency.trim();
+        if (!ALLOWED_PROFICIENCIES.contains(normalized)) {
+            throw new IllegalArgumentException("Proficiency must be one of: Beginner, Intermediate, Advanced, Expert");
+        }
+    }
+
     private void validateUniqueName(String name, UUID portfolioId, UUID currentSkillId) {
         if (skillRepository.existsByPortfolioIdAndName(portfolioId, name)
                 && (currentSkillId == null || !skillRepository.findByIdAndPortfolioId(currentSkillId, portfolioId)
                 .map(skill -> skill.getName().equals(name)).orElse(false))) {
             throw new IllegalArgumentException("Skill name already exists");
+        }
+    }
+
+    private void validateUniqueDisplayOrder(UUID portfolioId, int displayOrder, UUID currentSkillId) {
+        if (displayOrder <= 0) {
+            return;
+        }
+
+        boolean conflict = currentSkillId == null
+                ? skillRepository.existsByPortfolioIdAndDisplayOrder(portfolioId, displayOrder)
+                : skillRepository.existsByPortfolioIdAndDisplayOrderAndIdNot(portfolioId, displayOrder, currentSkillId);
+
+        if (conflict) {
+            throw new IllegalArgumentException("Display order " + displayOrder + " is already in use. Please choose another order.");
         }
     }
 

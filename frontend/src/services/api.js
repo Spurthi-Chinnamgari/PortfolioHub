@@ -59,6 +59,10 @@ export async function register(username, email, password) {
     });
 }
 
+export async function getPublicPortfolio(slug) {
+    return apiRequest(`/api/public/portfolio/${encodeURIComponent(slug)}`);
+}
+
 export async function getMyPortfolio() {
     return apiRequest("/api/portfolio/me");
 }
@@ -164,6 +168,12 @@ export async function sendContactMessage(portfolioSlug, message) {
 
 export async function getContactMessages() {
     return apiRequest("/api/contact/messages");
+}
+
+export async function markContactMessageAsRead(id) {
+    return apiRequest(`/api/contact/messages/${id}/read`, {
+        method: "PATCH",
+    });
 }
 
 export async function deleteContactMessage(id) {

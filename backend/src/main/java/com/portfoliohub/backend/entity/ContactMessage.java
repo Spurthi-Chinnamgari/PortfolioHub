@@ -62,5 +62,6 @@ public class ContactMessage {
     public String getSubject() { return subject; }
     public String getMessage() { return message; }
     public String getStatus() { return status; }
+    public void setStatus(String status) { this.status = status; }
     public Instant getCreatedAt() { return createdAt; }
 }

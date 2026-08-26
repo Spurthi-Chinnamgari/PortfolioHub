@@ -38,6 +38,19 @@ public class ContactMessageService {
                 .stream().map(this::toResponse).toList();
     }
 
+    public ContactMessageResponse markAsReadForOwner(UUID userId, UUID messageId) {
+        Portfolio portfolio = getPortfolioForUser(userId);
+        ContactMessage message = contactMessageRepository.findByIdAndPortfolioId(messageId, portfolio.getId())
+                .orElseThrow(() -> new IllegalArgumentException("Contact message not found"));
+
+        if (!"READ".equalsIgnoreCase(message.getStatus())) {
+            message.setStatus("READ");
+            message = contactMessageRepository.save(message);
+        }
+
+        return toResponse(message);
+    }
+
     public void deleteForOwner(UUID userId, UUID messageId) {
         Portfolio portfolio = getPortfolioForUser(userId);
         ContactMessage message = contactMessageRepository.findByIdAndPortfolioId(messageId, portfolio.getId())

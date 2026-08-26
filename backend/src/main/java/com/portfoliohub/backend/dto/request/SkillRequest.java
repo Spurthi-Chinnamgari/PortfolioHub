@@ -4,6 +4,7 @@ import java.util.UUID;
 
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 
 public class SkillRequest {
@@ -14,6 +15,10 @@ public class SkillRequest {
 
     private UUID categoryId;
 
+    @Pattern(
+            regexp = "^(|Beginner|Intermediate|Advanced|Expert)$",
+            message = "Proficiency must be one of: Beginner, Intermediate, Advanced, Expert"
+    )
     @Size(max = 30, message = "Proficiency must not exceed 30 characters")
     private String proficiency;
 

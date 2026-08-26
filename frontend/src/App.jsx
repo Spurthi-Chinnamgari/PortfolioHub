@@ -2,6 +2,7 @@ import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
 import ProtectedRoute from "./components/ProtectedRoute";
 import Dashboard from "./pages/Dashboard";
 import Login from "./pages/Login";
+import PublicPortfolio from "./pages/PublicPortfolio";
 import Register from "./pages/Register";
 
 function App() {
@@ -10,6 +11,7 @@ function App() {
             <Routes>
                 <Route path="/" element={<Login />} />
                 <Route path="/register" element={<Register />} />
+                <Route path="/p/:slug" element={<PublicPortfolio />} />
                 <Route
                     path="/dashboard"
                     element={
