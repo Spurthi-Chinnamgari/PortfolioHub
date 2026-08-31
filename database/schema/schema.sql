@@ -337,6 +337,7 @@ CREATE TABLE contact_messages (
     message TEXT NOT NULL,
 
     status VARCHAR(20) NOT NULL DEFAULT 'UNREAD',
+    read BOOLEAN NOT NULL DEFAULT FALSE,
 
     created_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
@@ -389,4 +390,3 @@ CREATE INDEX idx_experiences_portfolio_id ON experiences(portfolio_id);
 CREATE INDEX idx_education_portfolio_id ON education(portfolio_id);
 CREATE INDEX idx_contact_messages_portfolio_id ON contact_messages(portfolio_id);
 CREATE INDEX idx_project_technologies_technology_id ON project_technologies(technology_id);
-

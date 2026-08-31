@@ -1,9 +1,11 @@
 package com.portfoliohub.backend.service;
 
 import java.time.Instant;
+import java.util.Comparator;
 import java.util.List;
 import java.util.UUID;
 
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.stereotype.Service;
 
 import com.portfoliohub.backend.dto.request.ProjectRequest;
@@ -25,8 +27,10 @@ public class ProjectService {
         this.projectPortfolioRepository = projectPortfolioRepository;
     }
 
+    @Transactional
     public ProjectResponse create(UUID userId, ProjectRequest request) {
         ProjectPortfolio portfolio = getPortfolioForUser(userId);
+        List<Project> projects = normalizeProjects(portfolio.getId());
 
         Project project = new Project(
                 portfolio,
@@ -39,7 +43,7 @@ public class ProjectService {
                 request.getLiveDemoUrl(),
                 request.getFeatured(),
                 request.getPublished(),
-                request.getDisplayOrder()
+                projects.size() + 1
         );
         project.setCreatedAt(Instant.now());
         project.setUpdatedAt(Instant.now());
@@ -47,10 +51,11 @@ public class ProjectService {
         return toResponse(projectRepository.save(project));
     }
 
+    @Transactional
     public List<ProjectResponse> getAll(UUID userId) {
         ProjectPortfolio portfolio = getPortfolioForUser(userId);
 
-        return projectRepository.findByPortfolioId(portfolio.getId()).stream()
+        return normalizeProjects(portfolio.getId()).stream()
                 .map(this::toResponse)
                 .toList();
     }
@@ -62,8 +67,10 @@ public class ProjectService {
         return toResponse(project);
     }
 
+    @Transactional
     public ProjectResponse update(UUID userId, UUID projectId, ProjectRequest request) {
         ProjectPortfolio portfolio = getPortfolioForUser(userId);
+        normalizeProjects(portfolio.getId());
         Project project = findProjectForPortfolio(projectId, portfolio.getId());
 
         project.setTitle(request.getTitle());
@@ -75,17 +82,18 @@ public class ProjectService {
         project.setLiveDemoUrl(request.getLiveDemoUrl());
         project.setFeatured(request.getFeatured() != null && request.getFeatured());
         project.setPublished(request.getPublished() == null || request.getPublished());
-        project.setDisplayOrder(request.getDisplayOrder() == null ? 0 : request.getDisplayOrder());
         project.setUpdatedAt(Instant.now());
 
         return toResponse(projectRepository.save(project));
     }
 
+    @Transactional
     public void delete(UUID userId, UUID projectId) {
         ProjectPortfolio portfolio = getPortfolioForUser(userId);
         Project project = findProjectForPortfolio(projectId, portfolio.getId());
 
         projectRepository.delete(project);
+        normalizeProjects(portfolio.getId());
     }
 
     private ProjectPortfolio getPortfolioForUser(UUID userId) {
@@ -96,6 +104,23 @@ public class ProjectService {
     private Project findProjectForPortfolio(UUID projectId, UUID portfolioId) {
         return projectRepository.findByIdAndPortfolioId(projectId, portfolioId)
                 .orElseThrow(() -> new IllegalArgumentException("Project not found"));
+    }
+
+    private List<Project> normalizeProjects(UUID portfolioId) {
+        List<Project> projects = projectRepository.findByPortfolioId(portfolioId).stream()
+                .sorted(Comparator.comparingInt((Project project) -> project.getDisplayOrder() > 0 ? project.getDisplayOrder() : Integer.MAX_VALUE)
+                        .thenComparing(Project::getTitle, String.CASE_INSENSITIVE_ORDER)
+                        .thenComparing(project -> project.getId().toString()))
+                .toList();
+
+        for (int index = 0; index < projects.size(); index++) {
+            projects.get(index).setDisplayOrder(index + 1);
+        }
+
+        if (!projects.isEmpty()) {
+            projectRepository.saveAll(projects);
+        }
+        return projects;
     }
 
     private ProjectResponse toResponse(Project project) {

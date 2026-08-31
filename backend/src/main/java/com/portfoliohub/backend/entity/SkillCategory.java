@@ -4,6 +4,8 @@ import java.util.UUID;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
@@ -14,6 +16,7 @@ import jakarta.persistence.Table;
 public class SkillCategory {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
     @ManyToOne
@@ -27,6 +30,12 @@ public class SkillCategory {
     private int displayOrder;
 
     protected SkillCategory() {
+    }
+
+    public SkillCategory(ProjectPortfolio portfolio, String name, int displayOrder) {
+        this.portfolio = portfolio;
+        this.name = name;
+        this.displayOrder = displayOrder;
     }
 
     public UUID getId() {
@@ -43,5 +52,13 @@ public class SkillCategory {
 
     public int getDisplayOrder() {
         return displayOrder;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public void setDisplayOrder(int displayOrder) {
+        this.displayOrder = displayOrder;
     }
 }

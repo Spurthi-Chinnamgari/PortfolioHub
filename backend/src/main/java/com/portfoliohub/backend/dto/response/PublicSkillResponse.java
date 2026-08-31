@@ -7,6 +7,7 @@ public class PublicSkillResponse {
     private String name;
     private String proficiency;
     private UUID categoryId;
+    private String categoryName;
 
     public PublicSkillResponse() {
     }
@@ -33,5 +34,13 @@ public class PublicSkillResponse {
 
     public void setCategoryId(UUID categoryId) {
         this.categoryId = categoryId;
+    }
+
+    public String getCategoryName() {
+        return categoryName;
+    }
+
+    public void setCategoryName(String categoryName) {
+        this.categoryName = categoryName;
     }
 }

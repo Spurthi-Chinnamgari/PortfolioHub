@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.portfoliohub.backend.dto.request.ContactMessageRequest;
+import com.portfoliohub.backend.dto.request.ContactMessageReadRequest;
 import com.portfoliohub.backend.dto.response.ContactMessageResponse;
 import com.portfoliohub.backend.repository.UserRepository;
 import com.portfoliohub.backend.service.ContactMessageService;
@@ -48,8 +49,9 @@ public class ContactMessageController {
     }
 
     @PatchMapping("/messages/{id}/read")
-    public ContactMessageResponse markMessageAsRead(@PathVariable UUID id) {
-        return contactMessageService.markAsReadForOwner(getCurrentUserId(), id);
+    public ContactMessageResponse updateMessageReadStatus(@PathVariable UUID id,
+                                                           @RequestBody ContactMessageReadRequest request) {
+        return contactMessageService.updateReadStatusForOwner(getCurrentUserId(), id, request.isRead());
     }
 
     @DeleteMapping("/messages/{id}")

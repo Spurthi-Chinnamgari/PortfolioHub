@@ -12,6 +12,8 @@ public class PublicPortfolioResponse {
     private List<PublicProjectResponse> projects = new ArrayList<>();
     private List<PublicSkillResponse> skills = new ArrayList<>();
     private List<PublicCertificateResponse> certificates = new ArrayList<>();
+    private List<PublicExperienceResponse> experiences = new ArrayList<>();
+    private List<PublicSocialLinkResponse> socialLinks = new ArrayList<>();
 
     public PublicPortfolioResponse() {
     }
@@ -70,5 +72,21 @@ public class PublicPortfolioResponse {
 
     public void setCertificates(List<PublicCertificateResponse> certificates) {
         this.certificates = certificates == null ? new ArrayList<>() : certificates;
+    }
+
+    public List<PublicExperienceResponse> getExperiences() {
+        return experiences;
+    }
+
+    public void setExperiences(List<PublicExperienceResponse> experiences) {
+        this.experiences = experiences == null ? new ArrayList<>() : experiences;
+    }
+
+    public List<PublicSocialLinkResponse> getSocialLinks() {
+        return socialLinks;
+    }
+
+    public void setSocialLinks(List<PublicSocialLinkResponse> socialLinks) {
+        this.socialLinks = socialLinks == null ? new ArrayList<>() : socialLinks;
     }
 }

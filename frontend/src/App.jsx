@@ -13,7 +13,7 @@ function App() {
                 <Route path="/register" element={<Register />} />
                 <Route path="/p/:slug" element={<PublicPortfolio />} />
                 <Route
-                    path="/dashboard"
+                    path="/dashboard/*"
                     element={
                         <ProtectedRoute>
                             <Dashboard />

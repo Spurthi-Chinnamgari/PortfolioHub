@@ -135,6 +135,30 @@ export async function deleteSkill(id) {
     });
 }
 
+export async function getSkillCategories() {
+    return apiRequest("/api/skill-categories");
+}
+
+export async function createSkillCategory(category) {
+    return apiRequest("/api/skill-categories", {
+        method: "POST",
+        body: JSON.stringify(category),
+    });
+}
+
+export async function updateSkillCategory(id, category) {
+    return apiRequest(`/api/skill-categories/${id}`, {
+        method: "PUT",
+        body: JSON.stringify(category),
+    });
+}
+
+export async function deleteSkillCategory(id) {
+    return apiRequest(`/api/skill-categories/${id}`, {
+        method: "DELETE",
+    });
+}
+
 export async function getCertificates() {
     return apiRequest("/api/certificates");
 }
@@ -155,6 +179,54 @@ export async function updateCertificate(id, certificate) {
 
 export async function deleteCertificate(id) {
     return apiRequest(`/api/certificates/${id}`, {
+        method: "DELETE",
+    });
+}
+
+export async function getExperiences() {
+    return apiRequest("/api/experiences");
+}
+
+export async function createExperience(experience) {
+    return apiRequest("/api/experiences", {
+        method: "POST",
+        body: JSON.stringify(experience),
+    });
+}
+
+export async function updateExperience(id, experience) {
+    return apiRequest(`/api/experiences/${id}`, {
+        method: "PUT",
+        body: JSON.stringify(experience),
+    });
+}
+
+export async function deleteExperience(id) {
+    return apiRequest(`/api/experiences/${id}`, {
+        method: "DELETE",
+    });
+}
+
+export async function getSocialLinks() {
+    return apiRequest("/api/social-links");
+}
+
+export async function createSocialLink(socialLink) {
+    return apiRequest("/api/social-links", {
+        method: "POST",
+        body: JSON.stringify(socialLink),
+    });
+}
+
+export async function updateSocialLink(id, socialLink) {
+    return apiRequest(`/api/social-links/${id}`, {
+        method: "PUT",
+        body: JSON.stringify(socialLink),
+    });
+}
+
+export async function deleteSocialLink(id) {
+    return apiRequest(`/api/social-links/${id}`, {
         method: "DELETE",
     });
 }

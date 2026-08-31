@@ -1,9 +1,11 @@
 package com.portfoliohub.backend.service;
 
 import java.util.List;
+import java.util.Comparator;
 import java.util.Set;
 import java.util.UUID;
 
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.stereotype.Service;
 
 import com.portfoliohub.backend.dto.request.SkillRequest;
@@ -36,51 +38,51 @@ public class SkillService {
         this.projectPortfolioRepository = projectPortfolioRepository;
     }
 
+    @Transactional
     public List<SkillResponse> getAll(UUID userId) {
         ProjectPortfolio portfolio = getPortfolioForUser(userId);
-        return skillRepository.findByPortfolioIdOrderByDisplayOrderAscNameAsc(portfolio.getId())
+        return normalizeSkills(portfolio.getId())
                 .stream()
                 .map(this::toResponse)
                 .toList();
     }
 
+    @Transactional
     public SkillResponse create(UUID userId, SkillRequest request) {
         ProjectPortfolio portfolio = getPortfolioForUser(userId);
+        List<Skill> skills = normalizeSkills(portfolio.getId());
         validateCategory(request.getCategoryId(), portfolio.getId());
         validateUniqueName(request.getName(), portfolio.getId(), null);
         validateProficiency(request.getProficiency());
-        int displayOrder = request.getDisplayOrder() == null ? 0 : request.getDisplayOrder();
-        validateUniqueDisplayOrder(portfolio.getId(), displayOrder, null);
-
         Skill skill = new Skill(
                 portfolio,
                 request.getCategoryId(),
                 request.getName(),
                 request.getProficiency(),
-                displayOrder
+                skills.size() + 1
         );
         return toResponse(skillRepository.save(skill));
     }
 
+    @Transactional
     public SkillResponse update(UUID userId, UUID skillId, SkillRequest request) {
         ProjectPortfolio portfolio = getPortfolioForUser(userId);
+        normalizeSkills(portfolio.getId());
         Skill skill = findSkillForPortfolio(skillId, portfolio.getId());
         validateCategory(request.getCategoryId(), portfolio.getId());
         validateUniqueName(request.getName(), portfolio.getId(), skill.getId());
         validateProficiency(request.getProficiency());
-        int displayOrder = request.getDisplayOrder() == null ? 0 : request.getDisplayOrder();
-        validateUniqueDisplayOrder(portfolio.getId(), displayOrder, skill.getId());
-
         skill.setCategoryId(request.getCategoryId());
         skill.setName(request.getName());
         skill.setProficiency(request.getProficiency());
-        skill.setDisplayOrder(displayOrder);
         return toResponse(skillRepository.save(skill));
     }
 
+    @Transactional
     public void delete(UUID userId, UUID skillId) {
         ProjectPortfolio portfolio = getPortfolioForUser(userId);
         skillRepository.delete(findSkillForPortfolio(skillId, portfolio.getId()));
+        normalizeSkills(portfolio.getId());
     }
 
     private ProjectPortfolio getPortfolioForUser(UUID userId) {
@@ -118,18 +120,20 @@ public class SkillService {
         }
     }
 
-    private void validateUniqueDisplayOrder(UUID portfolioId, int displayOrder, UUID currentSkillId) {
-        if (displayOrder <= 0) {
-            return;
-        }
+    private List<Skill> normalizeSkills(UUID portfolioId) {
+        List<Skill> skills = skillRepository.findByPortfolioIdOrderByDisplayOrderAscNameAsc(portfolioId).stream()
+                .sorted(Comparator.comparingInt((Skill skill) -> skill.getDisplayOrder() > 0 ? skill.getDisplayOrder() : Integer.MAX_VALUE)
+                        .thenComparing(Skill::getName, String.CASE_INSENSITIVE_ORDER)
+                        .thenComparing(skill -> skill.getId().toString()))
+                .toList();
 
-        boolean conflict = currentSkillId == null
-                ? skillRepository.existsByPortfolioIdAndDisplayOrder(portfolioId, displayOrder)
-                : skillRepository.existsByPortfolioIdAndDisplayOrderAndIdNot(portfolioId, displayOrder, currentSkillId);
-
-        if (conflict) {
-            throw new IllegalArgumentException("Display order " + displayOrder + " is already in use. Please choose another order.");
+        for (int index = 0; index < skills.size(); index++) {
+            skills.get(index).setDisplayOrder(index + 1);
         }
+        if (!skills.isEmpty()) {
+            skillRepository.saveAll(skills);
+        }
+        return skills;
     }
 
     private SkillResponse toResponse(Skill skill) {

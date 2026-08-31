@@ -1,7 +1,5 @@
 package com.portfoliohub.backend.config;
 
-import jakarta.servlet.http.HttpServletResponse;
-
 import java.util.List;
 
 import org.springframework.context.annotation.Bean;
@@ -18,6 +16,8 @@ import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import com.portfoliohub.backend.security.JwtAuthenticationFilter;
+
+import jakarta.servlet.http.HttpServletResponse;
 
 @Configuration
 public class SecurityConfig {

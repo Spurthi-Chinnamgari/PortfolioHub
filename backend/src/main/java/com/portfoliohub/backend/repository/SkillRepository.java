@@ -16,7 +16,4 @@ public interface SkillRepository extends JpaRepository<Skill, UUID> {
 
     boolean existsByPortfolioIdAndName(UUID portfolioId, String name);
 
-    boolean existsByPortfolioIdAndDisplayOrder(UUID portfolioId, int displayOrder);
-
-    boolean existsByPortfolioIdAndDisplayOrderAndIdNot(UUID portfolioId, int displayOrder, UUID excludedSkillId);
 }

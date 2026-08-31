@@ -12,5 +12,7 @@ public interface ProjectRepository extends JpaRepository<Project, UUID> {
 
     List<Project> findByPortfolioId(UUID portfolioId);
 
+    List<Project> findByPortfolioIdOrderByDisplayOrderAscTitleAsc(UUID portfolioId);
+
     Optional<Project> findByIdAndPortfolioId(UUID projectId, UUID portfolioId);
 }

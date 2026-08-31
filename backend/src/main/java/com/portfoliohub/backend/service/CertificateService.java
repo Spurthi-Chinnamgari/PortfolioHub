@@ -1,8 +1,10 @@
 package com.portfoliohub.backend.service;
 
 import java.util.List;
+import java.util.Comparator;
 import java.util.UUID;
 
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.stereotype.Service;
 
 import com.portfoliohub.backend.dto.request.CertificateRequest;
@@ -24,22 +26,27 @@ public class CertificateService {
         this.projectPortfolioRepository = projectPortfolioRepository;
     }
 
+    @Transactional
     public List<CertificateResponse> getAll(UUID userId) {
         ProjectPortfolio portfolio = getPortfolioForUser(userId);
-        return certificateRepository.findByPortfolioIdOrderByDisplayOrderAscTitleAsc(portfolio.getId())
+        return normalizeCertificates(portfolio.getId())
                 .stream().map(this::toResponse).toList();
     }
 
+    @Transactional
     public CertificateResponse create(UUID userId, CertificateRequest request) {
         ProjectPortfolio portfolio = getPortfolioForUser(userId);
+        List<Certificate> certificates = normalizeCertificates(portfolio.getId());
         Certificate certificate = new Certificate(portfolio, request.getTitle(), request.getIssuer(),
                 request.getDescription(), request.getIssueDate(), request.getCredentialUrl(),
-                request.getFileUrl(), request.getDisplayOrder(), request.getPublished());
+                request.getFileUrl(), certificates.size() + 1, request.getPublished());
         return toResponse(certificateRepository.save(certificate));
     }
 
+    @Transactional
     public CertificateResponse update(UUID userId, UUID certificateId, CertificateRequest request) {
         ProjectPortfolio portfolio = getPortfolioForUser(userId);
+        normalizeCertificates(portfolio.getId());
         Certificate certificate = certificateRepository.findByIdAndPortfolioId(certificateId, portfolio.getId())
                 .orElseThrow(() -> new IllegalArgumentException("Certificate not found"));
         certificate.setTitle(request.getTitle());
@@ -48,21 +55,38 @@ public class CertificateService {
         certificate.setIssueDate(request.getIssueDate());
         certificate.setCredentialUrl(request.getCredentialUrl());
         certificate.setFileUrl(request.getFileUrl());
-        certificate.setDisplayOrder(request.getDisplayOrder() == null ? 0 : request.getDisplayOrder());
         certificate.setPublished(request.getPublished() == null || request.getPublished());
         return toResponse(certificateRepository.save(certificate));
     }
 
+    @Transactional
     public void delete(UUID userId, UUID certificateId) {
         ProjectPortfolio portfolio = getPortfolioForUser(userId);
         Certificate certificate = certificateRepository.findByIdAndPortfolioId(certificateId, portfolio.getId())
                 .orElseThrow(() -> new IllegalArgumentException("Certificate not found"));
         certificateRepository.delete(certificate);
+        normalizeCertificates(portfolio.getId());
     }
 
     private ProjectPortfolio getPortfolioForUser(UUID userId) {
         return projectPortfolioRepository.findByUserId(userId)
                 .orElseThrow(() -> new IllegalArgumentException("Portfolio not found"));
+    }
+
+    private List<Certificate> normalizeCertificates(UUID portfolioId) {
+        List<Certificate> certificates = certificateRepository.findByPortfolioIdOrderByDisplayOrderAscTitleAsc(portfolioId).stream()
+                .sorted(Comparator.comparingInt((Certificate certificate) -> certificate.getDisplayOrder() > 0 ? certificate.getDisplayOrder() : Integer.MAX_VALUE)
+                        .thenComparing(Certificate::getTitle, String.CASE_INSENSITIVE_ORDER)
+                        .thenComparing(certificate -> certificate.getId().toString()))
+                .toList();
+
+        for (int index = 0; index < certificates.size(); index++) {
+            certificates.get(index).setDisplayOrder(index + 1);
+        }
+        if (!certificates.isEmpty()) {
+            certificateRepository.saveAll(certificates);
+        }
+        return certificates;
     }
 
     private CertificateResponse toResponse(Certificate certificate) {

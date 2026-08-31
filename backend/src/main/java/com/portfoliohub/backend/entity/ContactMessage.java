@@ -39,6 +39,9 @@ public class ContactMessage {
     @Column(name = "status", nullable = false, length = 20)
     private String status;
 
+    @Column(name = "read", nullable = false)
+    private boolean read;
+
     @Column(name = "created_at", nullable = false)
     private Instant createdAt;
 
@@ -52,6 +55,7 @@ public class ContactMessage {
         this.subject = subject;
         this.message = message;
         this.status = "UNREAD";
+        this.read = false;
         this.createdAt = Instant.now();
     }
 
@@ -63,5 +67,10 @@ public class ContactMessage {
     public String getMessage() { return message; }
     public String getStatus() { return status; }
     public void setStatus(String status) { this.status = status; }
+    public boolean isRead() { return read; }
+    public void setRead(boolean read) {
+        this.read = read;
+        this.status = read ? "READ" : "UNREAD";
+    }
     public Instant getCreatedAt() { return createdAt; }
 }

@@ -2,8 +2,9 @@ import { useState } from "react";
 import "./ModernDeveloperTheme.css";
 
 const navItems = [
-    ["About", "#about"], ["Skills", "#skills"], ["Projects", "#projects"],
-    ["Certificates", "#certificates"], ["Contact", "#contact"],
+    ["About", "#about"], ["Skills", "#skills"], ["Experience", "#experience"],
+    ["Projects", "#projects"], ["Certificates", "#certificates"], ["Social", "#social"],
+    ["Contact", "#contact"],
 ];
 
 const fallbackDescription = "This portfolio highlights the owner's published work, technical strengths, and completed learning milestones.";
@@ -23,8 +24,10 @@ function ProjectLink({ href, children }) {
 function ModernDeveloperTheme({ portfolio, contactForm, submitting, error, success, onContactChange, onContactSubmit }) {
     const [mobileNavOpen, setMobileNavOpen] = useState(false);
     const skills = portfolio.skills || [];
+    const experiences = portfolio.experiences || [];
     const projects = portfolio.projects || [];
     const certificates = portfolio.certificates || [];
+    const socialLinks = portfolio.socialLinks || [];
     const description = portfolio.description || fallbackDescription;
 
     return (
@@ -49,34 +52,251 @@ function ModernDeveloperTheme({ portfolio, contactForm, submitting, error, succe
                             <h1>{portfolio.title}</h1>
                             <p className="modern-hero-description">{description}</p>
                             <p className="modern-identity">public portfolio / @{portfolio.slug}</p>
-                            <div className="modern-actions"><a className="modern-button modern-button-primary" href="#projects">View Projects <span aria-hidden="true">-&gt;</span></a><a className="modern-button modern-button-secondary" href="#contact">Contact Me</a></div>
+                            <div className="modern-actions">
+                                <a className="modern-button modern-button-primary" href="#projects">View Projects <span aria-hidden="true">-&gt;</span></a>
+                                <a className="modern-button modern-button-secondary" href="#contact">Contact Me</a>
+                            </div>
                         </div>
+
                         <div className="modern-code-wrap" aria-label="Portfolio summary">
                             <div className="modern-code-panel">
-                                <div className="modern-code-bar"><span><i /><i /><i /></span><span>portfolio.ts</span><span>•••</span></div>
-                                <pre><code><span className="code-purple">const</span> developer = {'{'}{`\n`}  <span className="code-blue">name</span>: <span className="code-green">&quot;{portfolio.title}&quot;</span>,{`\n`}  <span className="code-blue">portfolio</span>: <span className="code-green">&quot;@{portfolio.slug}&quot;</span>,{`\n`}  <span className="code-blue">projects</span>: <span className="code-number">{projects.length}</span>,{`\n`}  <span className="code-blue">skills</span>: <span className="code-number">{skills.length}</span>,{`\n`}  <span className="code-blue">certificates</span>: <span className="code-number">{certificates.length}</span>{`\n`}{'}'};</code></pre>
+                                <div className="modern-code-bar">
+                                    <span><i /><i /><i /></span>
+                                    <span>portfolio.ts</span>
+                                    <span>•••</span>
+                                </div>
+                                <pre><code><span className="code-purple">const</span> developer = {'{'}{`\n`}  <span className="code-blue">name</span>: <span className="code-green">&quot;{portfolio.title}&quot;</span>,{`\n`}  <span className="code-blue">portfolio</span>: <span className="code-green">&quot;@{portfolio.slug}&quot;</span>,{`\n`}  <span className="code-blue">projects</span>: <span className="code-number">{projects.length}</span>,{`\n`}  <span className="code-blue">skills</span>: <span className="code-number">{skills.length}</span>,{`\n`}  <span className="code-blue">experience</span>: <span className="code-number">{experiences.length}</span>,{`\n`}  <span className="code-blue">certificates</span>: <span className="code-number">{certificates.length}</span>{`\n`}{'}'};</code></pre>
                             </div>
-                            <div className="modern-float-card modern-float-projects"><strong>{String(projects.length).padStart(2, "0")}</strong><span>Projects</span></div>
-                            <div className="modern-float-card modern-float-skills"><strong>{String(skills.length).padStart(2, "0")}</strong><span>Skills</span></div>
+
+                            <div className="modern-float-card modern-float-projects">
+                                <strong>{String(projects.length).padStart(2, "0")}</strong>
+                                <span>Projects</span>
+                            </div>
+
+                            <div className="modern-float-card modern-float-skills">
+                                <strong>{String(skills.length).padStart(2, "0")}</strong>
+                                <span>Skills</span>
+                            </div>
                         </div>
                     </div>
                 </section>
 
                 <div className="modern-shell">
-                    <section className="modern-stats" aria-label="Portfolio summary">{[["Projects", projects.length], ["Skills", skills.length], ["Certificates", certificates.length]].map(([label, count]) => <div className="modern-stat" key={label}><strong>{String(count).padStart(2, "0")}</strong><span>{label}</span></div>)}</section>
+                    <section className="modern-stats" aria-label="Portfolio summary">
+                        {[
+                            ["Projects", projects.length],
+                            ["Skills", skills.length],
+                            ["Experience", experiences.length],
+                            ["Certificates", certificates.length],
+                        ].map(([label, count]) => (
+                            <div className="modern-stat" key={label}>
+                                <strong>{String(count).padStart(2, "0")}</strong>
+                                <span>{label}</span>
+                            </div>
+                        ))}
+                    </section>
 
-                    <section id="about" className="modern-section modern-about"><div className="modern-section-heading"><p className="modern-eyebrow">A little context</p><h2>About</h2></div><div className="modern-about-grid"><p className="modern-about-copy">{description}</p><div className="modern-profile"><p className="modern-profile-label">Developer Profile</p>{portfolio.slug && <div><span>Portfolio</span><strong>@{portfolio.slug}</strong></div>}{portfolio.visibility && <div><span>Visibility</span><strong>{portfolio.visibility}</strong></div>}{portfolio.theme && <div><span>Theme</span><strong>{portfolio.theme}</strong></div>}</div></div></section>
+                    <section id="about" className="modern-section modern-about">
+                        <div className="modern-section-heading">
+                            <p className="modern-eyebrow">A little context</p>
+                            <h2>About</h2>
+                        </div>
 
-                    {skills.length > 0 && <section id="skills" className="modern-section"><div className="modern-section-heading"><p className="modern-eyebrow">Technologies and tools I work with.</p><h2>Skills</h2></div><div className="modern-skill-grid">{skills.map((skill, index) => <article className="modern-skill-card" key={`${skill.name}-${index}`}><div><h3>{skill.name}</h3>{skill.proficiency ? <p>{skill.proficiency}</p> : <p className="modern-muted">Proficiency not specified</p>}</div><span className="modern-skill-mark" aria-hidden="true">+</span></article>)}</div></section>}
+                        <div className="modern-about-grid">
+                            <p className="modern-about-copy">{description}</p>
 
-                    {projects.length > 0 && <section id="projects" className="modern-section"><div className="modern-section-heading modern-heading-row"><div><p className="modern-eyebrow">Selected work</p><h2>Featured Projects</h2></div><span className="modern-section-count">{String(projects.length).padStart(2, "0")} total</span></div><div className="modern-project-grid">{projects.map((project) => <article className="modern-project-card" key={project.id || project.title}>{project.thumbnailUrl && <img src={project.thumbnailUrl} alt={project.title} />}{!project.thumbnailUrl && <div className="modern-project-placeholder" aria-hidden="true">{project.title?.slice(0, 1) || "P"}</div>}<div className="modern-project-body"><div className="modern-project-meta"><span>{project.slug || "Project"}</span>{project.published && <span className="modern-published">Published</span>}</div><h3>{project.title}</h3>{project.shortDescription && <p>{project.shortDescription}</p>}{project.fullDescription && <p className="modern-muted">{project.fullDescription}</p>}<div className="modern-project-links">{project.githubUrl && <ProjectLink href={project.githubUrl}>View Project</ProjectLink>}{project.liveDemoUrl && <ProjectLink href={project.liveDemoUrl}>Live Demo</ProjectLink>}</div></div></article>)}</div></section>}
+                            <div className="modern-profile">
+                                <p className="modern-profile-label">Developer Profile</p>
+                                {portfolio.slug && <div><span>Portfolio</span><strong>@{portfolio.slug}</strong></div>}
+                                {portfolio.visibility && <div><span>Visibility</span><strong>{portfolio.visibility}</strong></div>}
+                                {portfolio.theme && <div><span>Theme</span><strong>{portfolio.theme}</strong></div>}
+                            </div>
+                        </div>
+                    </section>
 
-                    {certificates.length > 0 && <section id="certificates" className="modern-section"><div className="modern-section-heading"><p className="modern-eyebrow">Proof of progress</p><h2>Certificates &amp; Credentials</h2></div><div className="modern-certificate-grid">{certificates.map((certificate, index) => <article className="modern-certificate-card" key={`${certificate.title}-${index}`}><div className="modern-certificate-icon" aria-hidden="true">✓</div><div><h3>{certificate.title}</h3>{certificate.issuer && <p>{certificate.issuer}</p>}{certificate.issueDate && <span>Issued {formatDate(certificate.issueDate)}</span>}{certificate.published && <span className="modern-published">Published</span>}{certificate.credentialUrl && <div><ProjectLink href={certificate.credentialUrl}>Verify Credential</ProjectLink></div>}{certificate.fileUrl && <div><ProjectLink href={certificate.fileUrl}>View File</ProjectLink></div>}</div></article>)}</div></section>}
+                    {skills.length > 0 && (
+                        <section id="skills" className="modern-section">
+                            <div className="modern-section-heading">
+                                <p className="modern-eyebrow">Technologies and tools I work with.</p>
+                                <h2>Skills</h2>
+                            </div>
 
-                    <section id="contact" className="modern-section modern-contact"><div className="modern-contact-intro"><p className="modern-eyebrow">Have a project in mind?</p><h2>Let&apos;s work together.</h2><p>A direct line for portfolio conversations, opportunities, and the next piece of work.</p>{portfolio.visibility && <span className="modern-availability"><i /> Portfolio is {portfolio.visibility.toLowerCase()}</span>}</div><form className="modern-contact-form" onSubmit={onContactSubmit}><div className="modern-form-grid"><label>Name<input name="name" value={contactForm.name} onChange={onContactChange} required /></label><label>Email<input name="email" type="email" value={contactForm.email} onChange={onContactChange} required /></label></div><label>Subject<input name="subject" value={contactForm.subject} onChange={onContactChange} required /></label><label>Message<textarea name="message" rows="5" value={contactForm.message} onChange={onContactChange} required /></label>{error && <p className="modern-message modern-error" role="alert" aria-live="polite">Unable to send message: {error}</p>}{success && <p className="modern-message modern-success" role="status" aria-live="polite">Your message was sent successfully.</p>}<button className="modern-button modern-button-primary" type="submit" disabled={submitting}>{submitting ? "Sending..." : "Send Message"} <span aria-hidden="true">-&gt;</span></button></form></section>
+                            <div className="modern-skill-grid">
+                                {skills.map((skill, index) => (
+                                    <article className="modern-skill-card" key={`${skill.name}-${index}`}>
+                                        <div>
+                                            <h3>{skill.name}</h3>
+                                            {skill.proficiency ? <p>{skill.proficiency}</p> : <p className="modern-muted">Proficiency not specified</p>}
+                                        </div>
+                                        <span className="modern-skill-mark" aria-hidden="true">+</span>
+                                    </article>
+                                ))}
+                            </div>
+                        </section>
+                    )}
+
+                    {experiences.length > 0 && (
+                        <section id="experience" className="modern-section">
+                            <div className="modern-section-heading modern-heading-row">
+                                <div>
+                                    <p className="modern-eyebrow">Professional journey</p>
+                                    <h2>Experience</h2>
+                                </div>
+                                <span className="modern-section-count">{String(experiences.length).padStart(2, "0")} total</span>
+                            </div>
+
+                            <div className="modern-experience-grid">
+                                {experiences.map((experience, index) => (
+                                    <article className="modern-experience-card" key={experience.id || `${experience.company}-${index}`}>
+                                        <div className="modern-experience-top">
+                                            <span>{experience.employmentType || "Experience"}</span>
+                                            <span>{String(experience.displayOrder || index + 1).padStart(2, "0")}</span>
+                                        </div>
+
+                                        <div className="modern-experience-body">
+                                            <h3>{experience.role}</h3>
+                                            <p className="modern-experience-company">{experience.company}</p>
+
+                                            {experience.location && <p>{experience.location}</p>}
+
+                                            <p className="modern-experience-period">
+                                                {formatDate(experience.startDate)}
+                                                {" → "}
+                                                {experience.currentlyWorking ? "Present" : formatDate(experience.endDate)}
+                                            </p>
+
+                                            {experience.description && <p>{experience.description}</p>}
+                                        </div>
+                                    </article>
+                                ))}
+                            </div>
+                        </section>
+                    )}
+
+                    {projects.length > 0 && (
+                        <section id="projects" className="modern-section">
+                            <div className="modern-section-heading modern-heading-row">
+                                <div>
+                                    <p className="modern-eyebrow">Selected work</p>
+                                    <h2>Featured Projects</h2>
+                                </div>
+                                <span className="modern-section-count">{String(projects.length).padStart(2, "0")} total</span>
+                            </div>
+
+                            <div className="modern-project-grid">
+                                {projects.map((project) => (
+                                    <article className="modern-project-card" key={project.id || project.title}>
+                                        {project.thumbnailUrl && <img src={project.thumbnailUrl} alt={project.title} />}
+                                        {!project.thumbnailUrl && <div className="modern-project-placeholder" aria-hidden="true">{project.title?.slice(0, 1) || "P"}</div>}
+
+                                        <div className="modern-project-body">
+                                            <div className="modern-project-meta">
+                                                <span>{project.slug || "Project"}</span>
+                                                {project.published && <span className="modern-published">Published</span>}
+                                            </div>
+
+                                            <h3>{project.title}</h3>
+                                            {project.shortDescription && <p>{project.shortDescription}</p>}
+                                            {project.fullDescription && <p className="modern-muted">{project.fullDescription}</p>}
+
+                                            <div className="modern-project-links">
+                                                {project.githubUrl && <ProjectLink href={project.githubUrl}>View Project</ProjectLink>}
+                                                {project.liveDemoUrl && <ProjectLink href={project.liveDemoUrl}>Live Demo</ProjectLink>}
+                                            </div>
+                                        </div>
+                                    </article>
+                                ))}
+                            </div>
+                        </section>
+                    )}
+
+                    {certificates.length > 0 && (
+                        <section id="certificates" className="modern-section">
+                            <div className="modern-section-heading">
+                                <p className="modern-eyebrow">Proof of progress</p>
+                                <h2>Certificates &amp; Credentials</h2>
+                            </div>
+
+                            <div className="modern-certificate-grid">
+                                {certificates.map((certificate, index) => (
+                                    <article className="modern-certificate-card" key={`${certificate.title}-${index}`}>
+                                        <div className="modern-certificate-icon" aria-hidden="true">✓</div>
+
+                                        <div>
+                                            <h3>{certificate.title}</h3>
+                                            {certificate.issuer && <p>{certificate.issuer}</p>}
+                                            {certificate.issueDate && <span>Issued {formatDate(certificate.issueDate)}</span>}
+                                            {certificate.published && <span className="modern-published">Published</span>}
+                                            {certificate.credentialUrl && <div><ProjectLink href={certificate.credentialUrl}>Verify Credential</ProjectLink></div>}
+                                            {certificate.fileUrl && <div><ProjectLink href={certificate.fileUrl}>View File</ProjectLink></div>}
+                                        </div>
+                                    </article>
+                                ))}
+                            </div>
+                        </section>
+                    )}
+
+                    {socialLinks.length > 0 && (
+                        <section id="social" className="modern-section">
+                            <div className="modern-section-heading">
+                                <p className="modern-eyebrow">Elsewhere online</p>
+                                <h2>Social Links</h2>
+                            </div>
+
+                            <div className="modern-social-grid">
+                                {socialLinks.map((socialLink, index) => (
+                                    <article className="modern-social-card" key={socialLink.id || `${socialLink.platform}-${index}`}>
+                                        <div>
+                                            <span className="modern-social-label">SOCIAL / {String(socialLink.displayOrder || index + 1).padStart(2, "0")}</span>
+                                            <h3>{socialLink.platform}</h3>
+                                            <p>Connect with me online.</p>
+                                        </div>
+
+                                        <ProjectLink href={socialLink.url}>Visit {socialLink.platform}</ProjectLink>
+                                    </article>
+                                ))}
+                            </div>
+                        </section>
+                    )}
+
+                    <section id="contact" className="modern-section modern-contact">
+                        <div className="modern-contact-intro">
+                            <p className="modern-eyebrow">Have a project in mind?</p>
+                            <h2>Let&apos;s work together.</h2>
+                            <p>A direct line for portfolio conversations, opportunities, and the next piece of work.</p>
+                            {portfolio.visibility && (
+                                <span className="modern-availability">
+                                    <i /> Portfolio is {portfolio.visibility.toLowerCase()}
+                                </span>
+                            )}
+                        </div>
+
+                        <form className="modern-contact-form" onSubmit={onContactSubmit}>
+                            <div className="modern-form-grid">
+                                <label>Name<input name="name" value={contactForm.name} onChange={onContactChange} required /></label>
+                                <label>Email<input name="email" type="email" value={contactForm.email} onChange={onContactChange} required /></label>
+                            </div>
+
+                            <label>Subject<input name="subject" value={contactForm.subject} onChange={onContactChange} required /></label>
+                            <label>Message<textarea name="message" rows="5" value={contactForm.message} onChange={onContactChange} required /></label>
+
+                            {error && <p className="modern-message modern-error" role="alert" aria-live="polite">Unable to send message: {error}</p>}
+                            {success && <p className="modern-message modern-success" role="status" aria-live="polite">Your message was sent successfully.</p>}
+
+                            <button className="modern-button modern-button-primary" type="submit" disabled={submitting}>
+                                {submitting ? "Sending..." : "Send Message"} <span aria-hidden="true">-&gt;</span>
+                            </button>
+                        </form>
+                    </section>
                 </div>
             </main>
-            <footer className="modern-footer"><div className="modern-shell"><span>© {new Date().getFullYear()} {portfolio.title}</span><a href="#top">Back to top <span aria-hidden="true">↑</span></a></div></footer>
+
+            <footer className="modern-footer">
+                <div className="modern-shell">
+                    <span>© {new Date().getFullYear()} {portfolio.title}</span>
+                    <a href="#top">Back to top <span aria-hidden="true">↑</span></a>
+                </div>
+            </footer>
         </div>
     );
 }

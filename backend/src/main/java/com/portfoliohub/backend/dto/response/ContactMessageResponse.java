@@ -12,6 +12,7 @@ public class ContactMessageResponse {
     private String subject;
     private String message;
     private String status;
+    private boolean read;
     private Instant createdAt;
 
     public ContactMessageResponse() {
@@ -31,6 +32,8 @@ public class ContactMessageResponse {
     public void setMessage(String message) { this.message = message; }
     public String getStatus() { return status; }
     public void setStatus(String status) { this.status = status; }
+    public boolean isRead() { return read; }
+    public void setRead(boolean read) { this.read = read; }
     public Instant getCreatedAt() { return createdAt; }
     public void setCreatedAt(Instant createdAt) { this.createdAt = createdAt; }
 }

@@ -53,3 +53,15 @@
 @media (max-width: 800px) { .cyber-hero-grid { grid-template-columns: 1fr; padding: 65px 0 75px; }.cyber-nav-toggle { display: block; }.cyber-nav-links { display: none; position: absolute; top: 66px; left: 0; right: 0; padding: 16px; background: #061827; border: 1px solid var(--cyber-line); z-index: 5; }.cyber-nav-links.is-open { display: grid; gap: 14px; }.cyber-nav { position: relative; }.cyber-stat { padding: 17px 14px; }.cyber-section { padding: 23px 18px; } }
 @media (max-width: 520px) { .cyber-shell { width: min(100% - 24px, 1160px); }.cyber-nav-links a { font-size: .78rem; }.cyber-stats { grid-template-columns: 1fr; }.cyber-stat { border-right: 0; border-bottom: 1px solid var(--cyber-line); }.cyber-form-grid { grid-template-columns: 1fr; gap: 18px; }.cyber-terminal-body { padding: 20px 14px; font-size: .78rem; overflow-wrap: anywhere; }.cyber-footer .cyber-shell { display: grid; gap: 8px; }.cyber-hero h1 { font-size: 2.7rem; } }
 @media (prefers-reduced-motion: reduce) { .cyber-terminal-theme *, .cyber-terminal-theme::before { animation: none !important; transition: none !important; } }
+.cyber-experience-grid {
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+}
+
+.cyber-experience-card {
+    position: relative;
+}
+
+.cyber-social-links {
+    margin-top: 4px;
+    gap: 22px;
+}
