@@ -242,9 +242,10 @@ export async function getContactMessages() {
     return apiRequest("/api/contact/messages");
 }
 
-export async function markContactMessageAsRead(id) {
+export async function markContactMessageAsRead(id, read = true) {
     return apiRequest(`/api/contact/messages/${id}/read`, {
         method: "PATCH",
+        body: JSON.stringify({ read }),
     });
 }
 

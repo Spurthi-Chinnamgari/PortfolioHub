@@ -229,7 +229,7 @@ function Dashboard() {
     const [mobileNavOpen, setMobileNavOpen] = useState(false);
     const activeSection = navItems.find((item) => item.path === location.pathname)?.id || "overview";
     const activeNavItem = navItems.find((item) => item.id === activeSection) || navItems[0];
-    const unreadMessageCount = contactMessages.filter((message) => message.status !== "READ").length;
+    const unreadMessageCount = contactMessages.filter((message) => !message.read).length;
 
     const user = (() => {
         try {
@@ -525,17 +525,23 @@ function Dashboard() {
     };
 
     const handleMarkMessageAsRead = async (contactMessage) => {
-        if (!contactMessage || contactMessage.status === "READ") {
+        if (!contactMessage || contactMessage.read) {
             return;
         }
 
         setError("");
         try {
-            const updatedMessage = await markContactMessageAsRead(contactMessage.id);
+            const updatedMessage = await markContactMessageAsRead(contactMessage.id, true);
             setContactMessages((currentMessages) => currentMessages.map((message) => (
-                message.id === contactMessage.id ? { ...message, status: updatedMessage.status || "READ" } : message
+                message.id === contactMessage.id
+                    ? {
+                        ...message,
+                        read: Boolean(updatedMessage.read),
+                        status: updatedMessage.status || "READ",
+                    }
+                    : message
             )));
-           setPortfolioSaveMessage("Message marked as read.");
+            setPortfolioSaveMessage("Message marked as read.");
         } catch (readError) {
             setError(readError.message);
         }
@@ -948,7 +954,15 @@ function Dashboard() {
                                 </div>
                                 <div className="overview-activity-card">
                                     <div className="overview-activity-header"><h3>Inbox snapshot</h3><button type="button" onClick={() => navigateToSection("#messages")}>Open inbox</button></div>
-                                     {contactMessages.slice(0, 3).map((message) => <button key={message.id} type="button" className="overview-list-item" onClick={() => navigateToSection("#messages")}><span>{message.subject || "No subject"}</span><small className={message.status === "READ" ? "" : "overview-unread"}>{message.status === "READ" ? "Read" : "Unread"}</small></button>)}
+                                     {contactMessages.slice(0, 3).map((message) => {
+                                         const isRead = Boolean(message.read ?? (message.status === "READ"));
+                                         return (
+                                             <button key={message.id} type="button" className="overview-list-item" onClick={() => navigateToSection("#messages")}>
+                                                 <span>{message.subject || "No subject"}</span>
+                                                 <small className={isRead ? "" : "overview-unread"}>{isRead ? "Read" : "Unread"}</small>
+                                             </button>
+                                         );
+                                     })}
                                     {contactMessages.length === 0 && <p className="muted">Your inbox is clear.</p>}
                                 </div>
                             </div>
@@ -1733,21 +1747,12 @@ function Dashboard() {
                                     ) : (
                                         <div className="message-list">
                                             {contactMessages.map((contactMessage) => {
-                                               const isRead = contactMessage.status === "READ";
+                                               const isRead = Boolean(contactMessage.read ?? (contactMessage.status === "READ"));
 
                                                 return (
                                                     <article
                                                         key={contactMessage.id}
                                                         className={`message-card ${isRead ? "message-card--read" : "message-card--unread"}`}
-                                                        onClick={() => handleMarkMessageAsRead(contactMessage)}
-                                                        onKeyDown={(event) => {
-                                                            if ((event.key === "Enter" || event.key === " ") && !isRead) {
-                                                                event.preventDefault();
-                                                                handleMarkMessageAsRead(contactMessage);
-                                                            }
-                                                        }}
-                                                        role="button"
-                                                        tabIndex={0}
                                                     >
                                                         <div className="message-header">
                                                             <div>
@@ -1763,7 +1768,7 @@ function Dashboard() {
                                                                 </p>
                                                             </div>
                                                             <div className="message-state">
-                                                                <label className="message-read-toggle" onClick={(event) => event.stopPropagation()}>
+                                                                <label className="message-read-toggle">
                                                                     <input
                                                                         type="checkbox"
                                                                         checked={isRead}
