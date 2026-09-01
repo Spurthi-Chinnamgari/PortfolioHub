@@ -48,11 +48,10 @@ export async function login(email, password) {
     });
 }
 
-export async function register(username, email, password) {
+export async function register(email, password) {
     return apiRequest("/api/users", {
         method: "POST",
         body: JSON.stringify({
-            username,
             email,
             password,
         }),

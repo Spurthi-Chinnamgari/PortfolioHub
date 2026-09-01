@@ -1,15 +1,17 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { login } from "../services/api";
 import "./Login.css";
 
 function Login() {
     const navigate = useNavigate();
+    const location = useLocation();
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [showPassword, setShowPassword] = useState(false);
     const [error, setError] = useState("");
     const [loading, setLoading] = useState(false);
+    const registrationSuccess = location.state?.registrationSuccess || "";
 
     const handleSubmit = async (event) => {
         event.preventDefault();
@@ -106,6 +108,8 @@ function Login() {
                             {!loading && <span aria-hidden="true">-&gt;</span>}
                         </button>
                     </form>
+                    {registrationSuccess && <div className="login-success" role="status">{registrationSuccess}</div>}
+                    <p className="login-card-link">Don&apos;t have an account? <Link to="/register">Sign up</Link></p>
                     <p className="login-card-note"><span aria-hidden="true">●</span> Secure workspace access</p>
                 </section>
             </main>

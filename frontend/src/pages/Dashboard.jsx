@@ -380,22 +380,6 @@ function Dashboard() {
             });
             setEditingPortfolio(false);
             setPortfolioSaveMessage(`Theme saved: ${savedPortfolio.theme}. Public portfolio will reflect the new look after refresh.`);
-            if (!portfolio) {
-                const [projectData, skillData, categoryData, certificateData, socialLinkData, messageData] = await Promise.all([
-                    getProjects(),
-                    getSkills(),
-                    getSkillCategories(),
-                    getCertificates(),
-                    getSocialLinks(),
-                    getContactMessages(),
-                ]);
-                setProjects(projectData);
-                setSkills(skillData);
-                setSkillCategories(sortByDisplayOrder(categoryData));
-                setCertificates(certificateData);
-                setSocialLinks(sortByDisplayOrder(socialLinkData));
-                setContactMessages(messageData);
-            }
         } catch (saveError) {
             setError(saveError.message);
         } finally {

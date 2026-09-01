@@ -348,6 +348,33 @@
   font-size: 0.8rem;
 }
 
+.login-success {
+  margin-top: 16px;
+  padding: 12px 14px;
+  color: #176448;
+  background: #effcf6;
+  border: 1px solid #bcebd6;
+  border-radius: 9px;
+  font-size: 0.78rem;
+}
+
+.login-card-link {
+  margin: 22px 0 0;
+  color: var(--login-muted);
+  font-size: 0.78rem;
+  text-align: center;
+}
+
+.login-card-link a {
+  color: var(--login-blue);
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.login-card-link a:hover,
+.login-card-link a:focus-visible {
+  text-decoration: underline;
+}
 /* =========================
    SUBMIT BUTTON
    ========================= */

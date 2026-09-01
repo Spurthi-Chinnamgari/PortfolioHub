@@ -1,9 +1,10 @@
 package com.portfoliohub.backend.service;
 
 import java.util.List;
+import java.util.Locale;
 
-import org.springframework.stereotype.Service;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Service;
 
 import com.portfoliohub.backend.dto.request.UserRegistrationRequest;
 import com.portfoliohub.backend.dto.response.UserResponse;
@@ -28,25 +29,49 @@ public class UserService {
     }
 
     public UserResponse register(UserRegistrationRequest request) {
-        if (userRepository.existsByUsername(request.getUsername())) {
-            throw new IllegalArgumentException("Username already exists");
+        String email = request.getEmail().trim();
+
+        if (userRepository.existsByEmail(email)) {
+            throw new IllegalArgumentException("Email already registered");
         }
 
-        if (userRepository.existsByEmail(request.getEmail())) {
-            throw new IllegalArgumentException("Email already exists");
+        String username = request.getUsername();
+        if (username == null || username.isBlank()) {
+            username = createUsernameFromEmail(email);
+        }
+
+        if (userRepository.existsByUsername(username)) {
+            throw new IllegalArgumentException("Username already exists");
         }
 
         String passwordHash = passwordEncoder.encode(request.getPassword());
 
         User user = new User(
-                request.getUsername(),
-                request.getEmail(),
+                username,
+                email,
                 passwordHash,
                 "USER",
                 false
         );
 
         return toResponse(userRepository.save(user));
+    }
+
+    private String createUsernameFromEmail(String email) {
+        String localPart = email.substring(0, email.indexOf('@'))
+                .toLowerCase(Locale.ROOT)
+                .replaceAll("[^a-z0-9._-]", "");
+        String baseUsername = localPart.isBlank() ? "user" : localPart;
+        baseUsername = baseUsername.substring(0, Math.min(baseUsername.length(), 44));
+
+        String username = baseUsername;
+        int suffix = 1;
+        while (userRepository.existsByUsername(username)) {
+            String suffixText = "-" + suffix++;
+            username = baseUsername.substring(0, Math.min(baseUsername.length(), 50 - suffixText.length()))
+                    + suffixText;
+        }
+        return username;
     }
 
     private UserResponse toResponse(User user) {
