@@ -217,7 +217,7 @@ CREATE TABLE skills (
     CONSTRAINT fk_skill_category
         FOREIGN KEY (portfolio_id, category_id)
         REFERENCES skill_categories(portfolio_id, id)
-        ON DELETE SET NULL (category_id)
+        ON DELETE SET NULL
 );
 
 CREATE TABLE experiences (
